@@ -3,44 +3,34 @@ defmodule TouchScreenScenic.Scene.Home do
   require Logger
 
   alias Scenic.Graph
-  alias Scenic.ViewPort
 
   import Scenic.Primitives
-  # import Scenic.Components
-
-  @note """
-    This is a very simple starter application.
-
-    If you want a more full-on example, please start from:
-
-    mix scenic.new.example
-  """
+  import Scenic.Components
 
   @text_size 24
 
-  # ============================================================================
-  # setup
-
-  # --------------------------------------------------------
-  def init(_, opts) do
-    # get the width and height of the viewport. This is to demonstrate creating
-    # a transparent full-screen rectangle to catch user input
-    {:ok, %ViewPort.Status{size: {width, height}}} = ViewPort.info(opts[:viewport])
-
-    # show the version of scenic and the glfw driver
-    scenic_ver = Application.spec(:scenic, :vsn) |> to_string()
-    glfw_ver = Application.spec(:scenic_driver_glfw, :vsn) |> to_string()
-
+  def init(_, _opts) do
     graph =
       Graph.build(font: :roboto, font_size: @text_size)
-      |> add_specs_to_graph([
-        text_spec("scenic: v" <> scenic_ver, translate: {20, 40}),
-        text_spec("glfw: v" <> glfw_ver, translate: {20, 40 + @text_size}),
-        text_spec(@note, translate: {20, 120}),
-        rect_spec({width, height})
-      ])
+      |> button("Greet", id: :btn_greet, translate: {200, 140}, width: 80, height: 40)
+      |> text("", id: :text_greet, translate: {240, 200}, text_align: :center)
 
-    {:ok, graph, push: graph}
+    {:ok, %{graph: graph, text: ""}, push: graph}
+  end
+
+  def filter_event({:click, :btn_greet}, _, %{graph: graph, text: text} = state) do
+    {caption, text} =
+      case text do
+        "" -> {"Clear", "Hello!"}
+        _ -> {"Greet", ""}
+      end
+
+    graph =
+      graph
+      |> Graph.modify(:btn_greet, &button(&1, caption))
+      |> Graph.modify(:text_greet, &text(&1, text))
+
+    {:noreply, %{state | graph: graph, text: text}, push: graph}
   end
 
   def handle_input(event, _context, state) do

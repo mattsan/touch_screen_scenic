@@ -5,13 +5,21 @@ use Mix.Config
 # Configure the main viewport for the Scenic application
 config :touch_screen_scenic, :viewport, %{
   name: :main_viewport,
-  size: {700, 600},
+  size: {480, 320},
   default_scene: {TouchScreenScenic.Scene.Home, nil},
   drivers: [
     %{
-      module: Scenic.Driver.Glfw,
-      name: :glfw,
-      opts: [resizeable: false, title: "touch_screen_scenic"]
+      module: Scenic.Driver.Nerves.Rpi
+    },
+    %{
+      module: TouchScreenScenic.Driver,
+      opts: [
+        device: "ADS7846 Touchscreen",
+        calibration: {
+          {0.0006739, -0.1291, 505.2},
+          {-0.08596, -0.0007315, 336.8}
+        }
+      ]
     }
   ]
 }

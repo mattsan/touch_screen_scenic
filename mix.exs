@@ -24,7 +24,9 @@ defmodule TouchScreenScenic.MixProject do
   defp deps do
     [
       {:scenic, "~> 0.10"},
-      {:scenic_driver_glfw, "~> 0.10", targets: :host},
+      {:font_metrics, "~> 0.3.0"},
+      {:scenic_driver_nerves_rpi, "~> 0.10.1"},
+      {:input_event, "~> 0.4"}
     ]
   end
 end
